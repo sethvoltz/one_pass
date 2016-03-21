@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    curses (1.0.2)
+    dispel (0.0.7)
+      curses
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  dispel
+
+BUNDLED WITH
+   1.11.2

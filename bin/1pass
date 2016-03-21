@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+
+require 'one_pass'
+
+vault_path = ARGV[0]
+app = OnePass::Application.new vault_path
+app.run
