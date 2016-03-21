@@ -10,6 +10,7 @@ module OnePass
       check_and_set_vault vault_path
       check_and_set_profile File.join(@vault_path, 'default', 'profile.js')
       @items = {}
+      @item_index = {}
     end
 
     def check_and_set_vault(vault_path)
@@ -62,10 +63,15 @@ module OnePass
         band = JSON.parse File.read(file)[3..-3]
         @items.merge! band
       end
+
+      @items.each_pair do |uuid, item|
+        overview = item_overview item
+        @item_index[overview['title']] = uuid
+      end
     end
 
-    def find(search_regex)
-      @items.select { |key, _| key.to_s.match search_regex }.values
+    def find(search)
+      @items.values_at *@item_index.values_at(*@item_index.keys.grep(search))
     end
 
     def decrypt_data(key, iv, data)

@@ -24,7 +24,7 @@ module OnePass
 
     def test_item
       # Test Code
-      item = @vault.find(/^2/).last
+      item = @vault.find(/skype/i).first
 
       print 'Decrypting item overview... '
       overview = @vault.item_overview item
