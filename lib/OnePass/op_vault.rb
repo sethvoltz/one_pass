@@ -34,7 +34,9 @@ module OnePass
       raise 'Unable to parse vault profile'
     end
 
-    def unlock(master_password)
+    def unlock(master_password = nil)
+      master_password = yield if block_given?
+
       salt = Base64.decode64(@profile['salt'])
       iterations = @profile['iterations']
       key, mac_key = derive_keys master_password, salt, iterations

@@ -1,3 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'dispel'
+gem 'pry'
+gemspec

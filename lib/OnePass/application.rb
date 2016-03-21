@@ -9,27 +9,30 @@ module OnePass
     end
 
     def run
-      opvault = OpVault.new @vault_path
+      @vault = OpVault.new @vault_path
 
-      print 'Type your password: '
-      master_password = STDIN.noecho(&:gets).chomp
-      puts
+      @vault.unlock do
+        print 'Type your password: '
+        master_password = STDIN.noecho(&:gets).chomp
+        puts
+        master_password
+      end
+      @vault.load_items
 
-      opvault.unlock master_password
-      opvault.load_items
+      test_item
     end
 
     def test_item
       # Test Code
-      item = opvault.find(/^2/).first
+      item = @vault.find(/^2/).last
 
       print 'Decrypting item overview... '
-      overview = opvault.item_overview item
+      overview = @vault.item_overview item
       puts '[ DONE ]'
       puts JSON.pretty_generate(overview)
 
       print 'Decrypting item detail... '
-      detail = opvault.item_detail item
+      detail = @vault.item_detail item
       print '[ DONE ]'
       puts JSON.pretty_generate(detail)
     end
