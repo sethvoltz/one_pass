@@ -2,7 +2,6 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 require 'OnePass'
+require 'OnePass/cli'
 
-vault_path = ARGV[0]
-app = OnePass::Application.new vault_path
-app.run
+app = OnePass::CLI.start ARGV
