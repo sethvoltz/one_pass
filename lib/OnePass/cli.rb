@@ -37,11 +37,15 @@ module OnePass
       # TODO: Check if name looks like a UUID
       # otherwise, search for title by substring, return first
       app = OnePass::Application.new
-      app.show name, type.keys.first.to_sym
+      reply_type = type.keys.first.to_sym
+      reply = app.show name, reply_type
+      puts reply_type == :all ? JSON.pretty_generate(reply) : reply
     end
 
-    desc 'search QUERY', 'Perform fuzzy search for items in your vault, shows title and username'
+    desc 'search QUERY', 'Perform fuzzy search for items in your vault, shows uuid, title and username'
     def search(query)
+      app = OnePass::Application.new
+      puts JSON.pretty_generate(app.search query)
     end
 
     map ls: :list

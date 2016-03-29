@@ -28,18 +28,34 @@ module OnePass
       config[5..-1].strip
     end
 
-    def show(search, reply_type)
-      item = @vault.find(/#{search}/i).first
+    def show(query, reply_type)
+      item = @vault.find(/#{query}/i).first
+      data = @vault.item_overview item
+      unless %i( uuid url title ).include? reply_type
+         data.merge!(@vault.item_detail item)
+      end
 
-      print 'Decrypting item overview... '
-      overview = @vault.item_overview item
-      puts '[ DONE ]'
-      puts JSON.pretty_generate(overview)
+      case reply_type
+      when *%i( uuid url title )
+        data[reply_type.to_s]
+      when :username
+        data['fields'].find({}) { |field| field['designation'] == 'username' }['value']
+      when :password
+        data['fields'].find({}) { |field| field['designation'] == 'password' }['value']
+      else
+        data
+      end
+    end
 
-      print 'Decrypting item detail... '
-      detail = @vault.item_detail item
-      print '[ DONE ]'
-      puts JSON.pretty_generate(detail)
+    def search(query)
+      @vault.find(/#{query}/i).collect do |item|
+        data = (@vault.item_overview item).merge(@vault.item_detail item)
+        {
+          uuid: data['uuid'],
+          title: data['title'],
+          username: data['fields'].find({}) { |field| field['designation'] == 'username' }['value']
+        }
+      end
     end
 
     def self.save(vault_path = nil)

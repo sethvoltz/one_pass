@@ -6,6 +6,17 @@ require 'json'
 module OnePass
   # Handle all the 1Password OpVault operations
   class OpVault
+    FIELD_TYPES = {
+      password: 'P',
+      text: 'T',
+      email: 'E',
+      number: 'N',
+      radio: 'R',
+      telephone: 'TEL',
+      checkbox: 'C',
+      url: 'U'
+    }
+
     def initialize(vault_path)
       check_and_set_vault vault_path
       check_and_set_profile File.join(@vault_path, 'default', 'profile.js')
@@ -136,14 +147,14 @@ module OnePass
     def item_overview(item)
       data = Base64.decode64(item['o'])
       overview = decrypt_opdata data, @overview_key, @overview_mac_key
-      JSON.parse overview
+      { 'uuid' => item['uuid'] }.merge JSON.parse overview
     end
 
     def item_detail(item)
       data = Base64.decode64(item['d'])
       item_key, item_mac_key = item_keys item
       detail = decrypt_opdata data, item_key, item_mac_key
-      JSON.parse detail
+      { 'uuid' => item['uuid'] }.merge JSON.parse detail
     end
   end
 end
