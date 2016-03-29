@@ -1,4 +1,4 @@
-# require 'dispel'
+require 'dispel'
 
 module OnePass
   # OnePass Application
@@ -9,13 +9,85 @@ module OnePass
       @vault_path = get_vault vault_path
       @vault = OpVault.new @vault_path
 
-      @vault.unlock do
-        print 'Type your password: '
-        master_password = STDIN.noecho(&:gets).chomp
-        puts
-        master_password
-      end
+      @vault.unlock password_entry
       @vault.load_items
+    end
+
+    def password_entry
+      accumulator = []
+      Dispel::Screen.open do |screen|
+        map = Dispel::StyleMap.new(screen.lines)
+        config = {
+          map: map,
+          width: screen.columns,
+          height: screen.lines,
+          mode: :password
+        }
+        screen.draw *draw_password_box(accumulator.length, config)
+
+        Dispel::Keyboard.output do |key|
+          case key
+          when :enter
+            case config[:mode]
+            when :cancel
+              raise 'Cancel'
+            else
+              break
+            end
+          when :backspace
+            accumulator.pop
+          when :down
+            config[:mode] = config[:mode] == :password ? :ok : config[:mode]
+          when :up
+            config[:mode] = :password
+          when :left
+            config[:mode] = config[:mode] == :password ? config[:mode] : :ok
+          when :right
+            config[:mode] = config[:mode] == :password ? config[:mode] : :cancel
+          else
+            accumulator.push key if config[:mode] == :password
+          end
+          screen.draw *draw_password_box(accumulator.length, config)
+        end
+      end
+      accumulator.join
+    end
+
+    def draw_password_box(pw_length, config)
+      message = 'Please enter your 1Password master password for the following vault:'
+      min_width = [message, @vault_path].max_by(&:length).length
+      prefix = 'Master Password: '
+
+      offset_left = (config[:width] - (min_width + 4)) / 2
+      offset_top = (config[:height] - 8) / 2
+      left = ' ' * offset_left
+      third = min_width / 3
+
+      password_string = ("*" * pw_length).ljust(min_width - prefix.length, '_')
+      buttons = '<OK>'.center(third) + ' ' * (min_width - (third * 2)) + '<Cancel>'.center(third)
+
+      box  = ("\n" * offset_top)
+      box += "#{left}┏#{'━' * (min_width + 2)}┓\n"
+      box += "#{left}┃ #{message.ljust(min_width)} ┃\n"
+      box += "#{left}┃ #{@vault_path.ljust(min_width)} ┃\n"
+      box += "#{left}┃ #{' ' * min_width} ┃\n"
+      box += "#{left}┃ #{prefix}#{password_string} ┃\n"
+      box += "#{left}┃#{' ' * (min_width + 2)}┃\n"
+      box += "#{left}┃ #{buttons} ┃\n"
+      box += "#{left}┗#{'━' * (min_width + 2)}┛\n"
+
+      cursor_top = offset_top + (config[:mode] == :password ? 4 : 6)
+      cursor_left = offset_left
+      case config[:mode]
+      when :ok
+        cursor_left += third / 2
+      when :cancel
+        cursor_left += min_width - third + third / 2 - 2
+      else
+        cursor_left += prefix.length + pw_length + 2
+      end
+
+      [box, config[:map], [cursor_top, cursor_left]]
     end
 
     def get_vault(vault_path = nil)
