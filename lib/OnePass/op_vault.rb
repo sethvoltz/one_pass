@@ -17,6 +17,12 @@ module OnePass
       url: 'U'
     }
 
+    DESIGNATION_TYPES = {
+      username: 'username',
+      password: 'password',
+      none: ''
+    }
+
     def initialize(vault_path)
       check_and_set_vault vault_path
       check_and_set_profile File.join(@vault_path, 'default', 'profile.js')
