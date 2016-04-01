@@ -2,6 +2,7 @@ require 'io/console'
 require 'thor'
 
 require 'OnePass/application'
+require 'OnePass/password'
 
 module OnePass
   # OnePass CLI
@@ -39,7 +40,8 @@ module OnePass
       app = OnePass::Application.new
       reply_type = type.keys.first.to_sym
       reply = app.show name, reply_type
-      puts reply_type == :all ? JSON.pretty_generate(reply) : reply
+      print reply_type == :all ? JSON.pretty_generate(reply) : reply
+      puts if $stdout.isatty
     end
 
     desc 'search QUERY', 'Perform fuzzy search for items in your vault, shows uuid, title and username'
