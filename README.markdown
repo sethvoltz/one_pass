@@ -26,3 +26,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/sethvo
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
+## Todo
+
+* [ ] Wrap main executable in a TTY.spawn that will allow Curses to run regardless of whether it is in a subshell
