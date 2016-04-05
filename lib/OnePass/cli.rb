@@ -9,6 +9,12 @@ module OnePass
   class CLI < Thor
     SHOW_OPTIONS = %w( all username password url uuid title )
 
+    map %w[--version -v] => :__version
+    desc "--version, -v", "Print the current version"
+    def __version
+      puts "#{File.basename $0} version #{OnePass::VERSION}"
+    end
+
     desc 'login', 'Save a 1Password vault and verify password'
     option :vault, aliases: '-v', type: :string, banner: 'Specify a vault path'
     def login
