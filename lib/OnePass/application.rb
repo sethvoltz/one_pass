@@ -7,12 +7,22 @@ module OnePass
       @vault_path = get_vault vault_path
       @vault = OpVault.new @vault_path
 
-      # @vault.unlock OldUI.new(@vault_path).password_entry
-      password = OnePass::Password.new(@vault_path).run
-      # puts "Password: #{password.inspect}"
-      # exit
-      @vault.unlock password
-      @vault.load_items
+      error_message = nil
+      prompter = OnePass::Password.new(vault_path: @vault_path)
+      loop do
+        password = prompter.prompt error_message
+        break if password.nil? # cancelled
+        begin
+          @vault.unlock password
+          @vault.load_items
+          break
+        rescue => error
+          error_message = error.message
+          next
+        end
+      end
+    ensure
+      prompter.done
     end
 
     def get_vault(vault_path = nil)

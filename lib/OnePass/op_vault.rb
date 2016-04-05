@@ -64,6 +64,10 @@ module OnePass
       raise 'Incorrect password'
     end
 
+    def unlocked?
+      !!@master_key && !!@overview_key
+    end
+
     def lock
       @master_key = @master_mac_key = nil
     end

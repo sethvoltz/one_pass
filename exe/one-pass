@@ -5,3 +5,5 @@ require 'OnePass'
 require 'OnePass/cli'
 
 app = OnePass::CLI.start ARGV
+
+trap("SIGINT") { exit }
