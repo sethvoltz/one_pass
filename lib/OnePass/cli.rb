@@ -16,7 +16,7 @@ module OnePass
     end
 
     desc 'login', 'Save a 1Password vault and verify password'
-    option :vault, aliases: '-v', type: :string, banner: 'Specify a vault path'
+    option :vault, aliases: '-v', type: :string, banner: 'Specify a vault path', required: true
     def login
       OnePass::Application.save options.vault
     end
@@ -46,8 +46,12 @@ module OnePass
       app = OnePass::Application.new
       reply_type = type.keys.first.to_sym
       reply = app.show name, reply_type
-      print reply_type == :all ? JSON.pretty_generate(reply) : reply
-      puts if $stdout.isatty
+      if options.clip
+        IO.popen('pbcopy', 'w') { |f| f << (reply_type == :all ? JSON.generate(reply) : reply) }
+      else
+        print reply_type == :all ? JSON.pretty_generate(reply) : reply
+        puts if $stdout.isatty
+      end
     end
 
     desc 'search QUERY', 'Perform fuzzy search for items in your vault, shows uuid, title and username'
