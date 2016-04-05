@@ -29,4 +29,5 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Todo
 
-* [ ] Wrap main executable in a TTY.spawn that will allow Curses to run regardless of whether it is in a subshell
+* [ ] Check for prerequisite external applications before calling them (pinentry, pbcopy)
+* [ ] Detect OS to use appropriate clipboard utility
