@@ -11,7 +11,7 @@ module OnePass
       prompter = OnePass::Password.new(vault_path: @vault_path)
       loop do
         password = prompter.prompt error_message
-        break if password.nil? # cancelled
+        exit if password.nil? # cancelled
         begin
           @vault.unlock password
           @vault.load_items
