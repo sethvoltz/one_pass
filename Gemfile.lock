@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    one_pass (0.2.1)
+    one_pass (0.3.0)
       thor (~> 0.19)
       ttyname (~> 1.0)
 
