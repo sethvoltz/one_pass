@@ -1,4 +1,4 @@
-require "English"
+require 'English'
 
 module OnePass
   # OnePass Application
@@ -30,10 +30,12 @@ module OnePass
         password = prompter.prompt error_message
         exit if password.nil? # cancelled
         begin
-          @vault.unlock password && @vault.load_items
+          @vault.unlock password
+          @vault.load_items
           break
         rescue => error
           error_message = error.message
+          next
         end
       end
     end

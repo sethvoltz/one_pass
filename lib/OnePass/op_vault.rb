@@ -15,13 +15,13 @@ module OnePass
       telephone: 'TEL',
       checkbox: 'C',
       url: 'U'
-    }
+    }.freeze
 
     DESIGNATION_TYPES = {
       username: 'username',
       password: 'password',
       none: ''
-    }
+    }.freeze
 
     def initialize(vault_path)
       check_and_set_vault vault_path
