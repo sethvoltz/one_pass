@@ -7,12 +7,12 @@ require 'OnePass/password'
 module OnePass
   # OnePass CLI
   class CLI < Thor
-    SHOW_OPTIONS = %w( all username password url uuid title )
+    SHOW_OPTIONS = %w( all username password url uuid title ).freeze
 
-    map %w[--version -v] => :__version
-    desc "--version, -v", "Print the current version"
+    map %w(--version -v) => :__version
+    desc '--version, -v', 'Print the current version'
     def __version
-      puts "#{File.basename $0} version #{OnePass::VERSION}"
+      puts "#{File.basename $PROGRAM_NAME} version #{OnePass::VERSION}"
     end
 
     desc 'login', 'Save a 1Password vault and verify password'
@@ -31,6 +31,7 @@ module OnePass
     SHOW_OPTIONS.each do |switch|
       option switch.to_sym, type: :boolean
     end
+
     def show(name)
       # Check for multiple mutex args
       type = SHOW_OPTIONS.each_with_object(Hash.new) do |k, hash|
@@ -57,7 +58,7 @@ module OnePass
     desc 'search QUERY', 'Perform fuzzy search for items in your vault, shows uuid, title and username'
     def search(query)
       app = OnePass::Application.new
-      puts JSON.pretty_generate(app.search query)
+      puts JSON.pretty_generate(app.search(query))
     end
 
     map ls: :list

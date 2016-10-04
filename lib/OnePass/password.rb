@@ -3,15 +3,17 @@ require 'ttyname'
 module OnePass
   # Fork out to `pinentry` for password
   class Password
-    DESCRIPTION = 'Please enter your 1Password master password for the following vault:'
+    DESCRIPTION = 'Please enter your 1Password master password for the following vault:'.freeze
     DEFAULT = {
       title: '1Password CLI',
       prompt: 'Master Password: '
-    }
+    }.freeze
 
     def initialize(opts = {})
       @config = OpenStruct.new DEFAULT.merge(opts)
-      @config.description ||= "#{DESCRIPTION}%0a#{@config.vault_path}" if @config.vault_path
+      if @config.vault_path
+        @config.description ||= "#{DESCRIPTION}%0a#{@config.vault_path}"
+      end
     end
 
     def prompt(error_message = nil)
@@ -19,7 +21,7 @@ module OnePass
       @pipe = IO.popen 'pinentry', 'r+'
       check
       send_settings
-      get_password
+      fetch_password
       @password
     end
 
@@ -41,15 +43,13 @@ module OnePass
       option 'display', ENV['DISPLAY']
     end
 
-    def get_password
+    def fetch_password
       @password = ''
       send 'GETPIN'
-      while true
+      loop do
         case response = @pipe.gets
-        when /^D .*/
-          @password = response[2..-1].chomp
-        when /^OK/
-          break
+        when /^D .*/ then @password = response[2..-1].chomp
+        when /^OK/ then break
         else
           @password = nil
           break
