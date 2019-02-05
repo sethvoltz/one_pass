@@ -11,6 +11,17 @@ gem install one_pass
 
 ## Usage
 
+```
+$ one-pass
+Commands:
+  one-pass --version, -v                           # Print the current version
+  one-pass help [COMMAND]                          # Describe available commands or one specific command
+  one-pass list FOLDER                             # List the contents of a folder, shows title and username
+  one-pass login -v, --vault=Specify a vault path  # Save a 1Password vault and verify password
+  one-pass logout                                  # Forget any saved 1Password vault
+  one-pass search QUERY                            # Perform fuzzy search for items in your vault, shows uuid, title and username
+  one-pass show [type] {NAME|UUID}                 # Get a single item from your vault, use only one type
+```
 
 ## Development
 
